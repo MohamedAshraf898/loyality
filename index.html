@@ -1,752 +1,1036 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LoyalBite</title>
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap">
-  <style>
-    /* ====== Your existing CSS ====== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --gold: #C9A84C;
-      --gold-light: #F5E6C0;
-      --dark: #1A1208;
-      --surface: #FBF7EE;
-      --card: #FFFFFF;
-      --border: rgba(201, 168, 76, 0.25);
-      --text: #1A1208;
-      --muted: #7A6840;
-      --success: #2D6A4F;
-      --success-bg: #D8F3DC;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--surface);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .app {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 0 0 2rem;
-    }
-
-    .header {
-      background: var(--dark);
-      color: #F5E6C0;
-      padding: 1.5rem 1.25rem 1rem;
-      text-align: center;
-    }
-
-    .header h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--gold);
-    }
-
-    .header p {
-      font-size: 12px;
-      color: #A89060;
-      margin-top: 2px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .tabs {
-      display: flex;
-      background: var(--dark);
-      padding: 0 1.25rem 1rem;
-      gap: 8px;
-    }
-
-    .tab {
-      flex: 1;
-      padding: 8px;
-      border: 1px solid rgba(201, 168, 76, 0.3);
-      background: transparent;
-      color: #A89060;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .tab.active {
-      background: var(--gold);
-      color: var(--dark);
-      font-weight: 500;
-      border-color: var(--gold);
-    }
-
-    .panel {
-      display: none;
-      padding: 1.25rem;
-    }
-
-    .panel.active {
-      display: block;
-    }
-
-    .section-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 1rem;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      background: var(--card);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .field input:focus {
-      border-color: var(--gold);
-    }
-
-    .btn-primary {
-      width: 100%;
-      padding: 13px;
-      background: var(--gold);
-      color: var(--dark);
-      border: none;
-      border-radius: 10px;
-      font-family: 'Syne', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      margin-top: 4px;
-      letter-spacing: 0.02em;
-    }
-
-    .btn-primary:hover {
-      opacity: 0.88;
-    }
-
-    .btn-secondary {
-      width: 100%;
-      padding: 11px;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 8px;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-    }
-
-    .qr-card {
-      text-align: center;
-      padding: 1.5rem 1.25rem;
-    }
-
-    .qr-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-
-    .qr-id {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 1.2rem;
-    }
-
-    .qr-wrap {
-      display: inline-block;
-      padding: 14px;
-      background: white;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 1.2rem;
-    }
-
-    .qr-wrap canvas {
-      display: block;
-    }
-
-    .visits-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 0.5rem;
-    }
-
-    .star {
-      font-size: 20px;
-    }
-
-    .star.filled {
-      color: var(--gold);
-    }
-
-    .star.empty {
-      color: #DDD;
-    }
-
-    .visits-label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .reward-badge {
-      display: inline-block;
-      background: var(--success-bg);
-      color: var(--success);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-top: 8px;
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 1rem 0;
-    }
-
-    .customer-list {
-      list-style: none;
-    }
-
-    .customer-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      transition: background 0.15s;
-      border-radius: 6px;
-      padding: 10px 8px;
-    }
-
-    .customer-item:hover {
-      background: #FBF3E0;
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--gold-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gold);
-      flex-shrink: 0;
-    }
-
-    .cust-info {
-      flex: 1;
-    }
-
-    .cust-name {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .cust-meta {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .cust-visits {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--gold);
-    }
-
-    .scan-input-wrap {
-      position: relative;
-    }
-
-    .scan-fake {
-      background: var(--dark);
-      border-radius: 14px;
-      padding: 2rem 1.5rem;
-      text-align: center;
-      margin-bottom: 1rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .scan-frame {
-      width: 140px;
-      height: 140px;
-      border: 3px solid var(--gold);
-      border-radius: 14px;
-      margin: 0 auto 1rem;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .scan-line {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      animation: scan 2s linear infinite;
-    }
-
-    @keyframes scan {
-      0% {
-        top: 10%;
-      }
-
-      100% {
-        top: 85%;
-      }
-    }
-
-    .scan-icon {
-      font-size: 42px;
-      opacity: 0.15;
-      color: white;
-    }
-
-    .scan-label {
-      color: #A89060;
-      font-size: 13px;
-    }
-
-    .scan-input-group {
-      display: flex;
-      gap: 8px;
-    }
-
-    .scan-input-group input {
-      flex: 1;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      background: var(--card);
-      color: var(--text);
-      outline: none;
-      letter-spacing: 0.05em;
-    }
-
-    .scan-input-group input:focus {
-      border-color: var(--gold);
-    }
-
-    .scan-btn {
-      padding: 10px 16px;
-      background: var(--gold);
-      border: none;
-      border-radius: 8px;
-      color: var(--dark);
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .alert {
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-top: 10px;
-      display: none;
-    }
-
-    .alert.success {
-      background: var(--success-bg);
-      color: var(--success);
-      display: block;
-    }
-
-    .alert.error {
-      background: #FDECEA;
-      color: #A32D2D;
-      display: block;
-    }
-
-    .visit-log {
-      max-height: 180px;
-      overflow-y: auto;
-    }
-
-    .log-item {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .log-item:last-child {
-      border-bottom: none;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .empty-icon {
-      font-size: 32px;
-      margin-bottom: 8px;
-      opacity: 0.4;
-    }
-
-    .success-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .success-overlay.show {
-      display: flex;
-    }
-
-    .success-modal {
-      background: var(--card);
-      border-radius: 20px;
-      padding: 2rem 1.5rem;
-      text-align: center;
-      max-width: 300px;
-      width: 90%;
-      animation: popIn 0.3s ease;
-    }
-
-    @keyframes popIn {
-      from {
-        transform: scale(0.85);
-        opacity: 0;
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .success-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-
-    .success-cust {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .success-visits {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--gold);
-      font-family: 'Syne', sans-serif;
-      margin: 8px 0 4px;
-    }
-
-    .success-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 1.2rem;
-    }
-
-    .btn-close {
-      padding: 10px 28px;
-      background: var(--gold);
-      border: none;
-      border-radius: 10px;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--dark);
-      cursor: pointer;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app">
-    <div class="header">
-      <h1>&#9733; LoyalBite</h1>
-      <p>Restaurant Loyalty System</p>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F5E6C0;
+    --dark: #1A1208;
+    --surface: #FBF7EE;
+    --card: #FFFFFF;
+    --border: rgba(201, 168, 76, 0.25);
+    --text: #1A1208;
+    --muted: #7A6840;
+    --success: #2D6A4F;
+    --success-bg: #D8F3DC;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 2rem;
+  }
+
+  .header {
+    background: var(--dark);
+    color: #F5E6C0;
+    padding: 1.5rem 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+  }
+
+  .header p {
+    font-size: 12px;
+    color: #A89060;
+    margin-top: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tabs {
+    display: flex;
+    background: var(--dark);
+    padding: 0 1.25rem 1rem;
+    gap: 8px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    background: transparent;
+    color: #A89060;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 500;
+    border-color: var(--gold);
+  }
+
+  .panel {
+    display: none;
+    padding: 1.25rem;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: var(--card);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus {
+    border-color: var(--gold);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.88;
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .qr-card {
+    text-align: center;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .qr-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .qr-id {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .qr-wrap {
+    display: inline-block;
+    padding: 14px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1.2rem;
+  }
+
+  .qr-wrap canvas {
+    display: block;
+  }
+
+  .visits-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 0.5rem;
+  }
+
+  .star {
+    font-size: 20px;
+  }
+
+  .star.filled {
+    color: var(--gold);
+  }
+
+  .star.empty {
+    color: #DDD;
+  }
+
+  .visits-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .reward-badge {
+    display: inline-block;
+    background: var(--success-bg);
+    color: var(--success);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+  }
+
+  .customer-list {
+    list-style: none;
+  }
+
+  .customer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 6px;
+    padding: 10px 8px;
+  }
+
+  .customer-item:hover {
+    background: #FBF3E0;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .cust-info {
+    flex: 1;
+  }
+
+  .cust-name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .cust-meta {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .cust-visits {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .scan-input-wrap {
+    position: relative;
+  }
+
+  .scan-fake {
+    background: var(--dark);
+    border-radius: 14px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-frame {
+    width: 140px;
+    height: 140px;
+    border: 3px solid var(--gold);
+    border-radius: 14px;
+    margin: 0 auto 1rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scan-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: scan 2s linear infinite;
+  }
+
+  @keyframes scan {
+    0% {
+      top: 10%;
+    }
+
+    100% {
+      top: 85%;
+    }
+  }
+
+  .scan-icon {
+    font-size: 42px;
+    opacity: 0.15;
+    color: white;
+  }
+
+  .scan-label {
+    color: #A89060;
+    font-size: 13px;
+  }
+
+  .scan-manual {}
+
+  .scan-input-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .scan-input-group input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--card);
+    color: var(--text);
+    outline: none;
+    letter-spacing: 0.05em;
+  }
+
+  .scan-input-group input:focus {
+    border-color: var(--gold);
+  }
+
+  .scan-btn {
+    padding: 10px 16px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    color: var(--dark);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .alert {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
+  }
+
+  .alert.success {
+    background: var(--success-bg);
+    color: var(--success);
+    display: block;
+  }
+
+  .alert.error {
+    background: #FDECEA;
+    color: #A32D2D;
+    display: block;
+  }
+
+  .visit-log {
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .log-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .log-item:last-child {
+    border-bottom: none;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.4;
+  }
+
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .success-overlay.show {
+    display: flex;
+  }
+
+  .success-modal {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    max-width: 300px;
+    width: 90%;
+    animation: popIn 0.3s ease;
+  }
+
+  @keyframes popIn {
+    from {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .success-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  .success-cust {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .success-visits {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Syne', sans-serif;
+    margin: 8px 0 4px;
+  }
+
+  .success-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+
+  .btn-close {
+    padding: 10px 28px;
+    background: var(--gold);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--dark);
+    cursor: pointer;
+  }
+</style>
+
+<div class="app">
+  <div class="header">
+    <h1>&#9733; LoyalBite</h1>
+    <p>Restaurant Loyalty System</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('signup')">Sign Up</button>
+    <button class="tab" onclick="switchTab('card')">My Card</button>
+    <button class="tab" onclick="switchTab('scanner')">Scanner</button>
+    <button class="tab" onclick="switchTab('customers')">Customers</button>
+  </div>
+
+  <!-- SIGN UP -->
+  <div id="tab-signup" class="panel active">
+    <p class="section-title">Join the loyalty program</p>
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="reg-name" placeholder="e.g. Ahmed Hassan" />
     </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('signup')">Sign Up</button>
-      <button class="tab" onclick="switchTab('card')">My Card</button>
-      <button class="tab" onclick="switchTab('scanner')">Scanner</button>
-      <button class="tab" onclick="switchTab('customers')">Customers</button>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="tel" id="reg-phone" placeholder="e.g. 01012345678" />
     </div>
-
-    <!-- SIGN UP -->
-    <div id="tab-signup" class="panel active">
-      <p class="section-title">Join the loyalty program</p>
-      <div class="field"><label>Full Name</label><input type="text" id="reg-name" placeholder="e.g. Ahmed Hassan" />
-      </div>
-      <div class="field"><label>Phone Number</label><input type="tel" id="reg-phone" placeholder="e.g. 01012345678" />
-      </div>
-      <div class="field"><label>Email (optional)</label><input type="email" id="reg-email"
-          placeholder="you@email.com" /></div>
-      <button class="btn-primary" onclick="registerCustomer()">Generate My QR Card &#8594;</button>
+    <div class="field">
+      <label>Email (optional)</label>
+      <input type="email" id="reg-email" placeholder="you@email.com" />
     </div>
+    <button class="btn-primary" onclick="registerCustomer()">Generate My QR Card &#8594;</button>
+  </div>
 
-    <!-- MY CARD -->
-    <div id="tab-card" class="panel">
-      <div id="card-empty" class="empty-state">
-        <div class="empty-icon">&#9728;</div>
-        <p>No card yet. Sign up first to get your loyalty QR code.</p>
-      </div>
-      <div id="card-display" style="display:none;">
-        <div class="card qr-card">
-          <div class="qr-name" id="card-name"></div>
-          <div class="qr-id" id="card-uid"></div>
-          <div class="qr-wrap"><canvas id="qr-canvas" width="160" height="160"></canvas></div>
-          <div class="visits-row" id="stars-row"></div>
-          <div class="visits-label" id="visits-label"></div>
-          <div id="reward-zone"></div>
+  <!-- MY CARD -->
+  <div id="tab-card" class="panel">
+    <div id="card-empty" class="empty-state">
+      <div class="empty-icon">&#9728;</div>
+      <p>No card yet. Sign up first to get your loyalty QR code.</p>
+    </div>
+    <div id="card-display" style="display:none;">
+      <div class="card qr-card">
+        <div class="qr-name" id="card-name"></div>
+        <div class="qr-id" id="card-uid"></div>
+        <div class="qr-wrap">
+          <canvas id="qr-canvas" width="160" height="160"></canvas>
         </div>
-        <div class="card" style="padding:1rem 1.25rem;">
-          <div
-            style="font-size:12px; color: var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">
-            Visit History</div>
-          <div class="visit-log" id="visit-log-me">
-            <div class="empty-state" style="padding:1rem;">
-              <p>No visits yet.</p>
-            </div>
+        <div class="visits-row" id="stars-row"></div>
+        <div class="visits-label" id="visits-label"></div>
+        <div id="reward-zone"></div>
+      </div>
+      <div class="card" style="padding: 1rem 1.25rem;">
+        <div
+          style="font-size:12px; color: var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">
+          Visit History</div>
+        <div class="visit-log" id="visit-log-me">
+          <div class="empty-state" style="padding:1rem;">
+            <p>No visits yet.</p>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- SCANNER -->
-    <div id="tab-scanner" class="panel">
-      <p class="section-title">Restaurant scanner</p>
-      <div class="scan-fake">
-        <div class="scan-frame">
-          <div class="scan-line"></div>
-          <div class="scan-icon">&#9644;</div>
-        </div>
-        <div class="scan-label">Point camera at customer QR code</div>
+  <!-- SCANNER (Restaurant Staff) -->
+  <div id="tab-scanner" class="panel">
+    <p class="section-title">Restaurant scanner</p>
+    <div class="scan-fake">
+      <div class="scan-frame">
+        <div class="scan-line"></div>
+        <div class="scan-icon">&#9644;</div>
       </div>
-      <div class="divider"></div>
-      <div style="font-size:13px; color:var(--muted); margin-bottom:10px;">Or enter customer ID manually:</div>
-      <div class="scan-input-group">
-        <input type="text" id="scan-input" placeholder="e.g. LB-A1B2C3" style="text-transform:uppercase;" />
-        <button class="scan-btn" onclick="processScan()">Add Visit</button>
-      </div>
-      <div id="scan-alert" class="alert"></div>
+      <div class="scan-label">Point camera at customer QR code</div>
     </div>
+    <div class="divider"></div>
+    <div style="font-size:13px; color:var(--muted); margin-bottom:10px;">Or enter customer ID manually:</div>
+    <div class="scan-input-group">
+      <input type="text" id="scan-input" placeholder="e.g. LB-A1B2C3" style="text-transform:uppercase;" />
+      <button class="scan-btn" onclick="processScan()">Add Visit</button>
+    </div>
+    <div id="scan-alert" class="alert"></div>
+  </div>
 
-    <!-- CUSTOMERS LIST -->
-    <div id="tab-customers" class="panel">
-      <p class="section-title">All customers</p>
-      <div id="customers-list">
-        <div class="empty-state">
-          <div class="empty-icon">&#128101;</div>
-          <p>No customers yet. Sign ups will appear here.</p>
-        </div>
+  <!-- CUSTOMERS LIST -->
+  <div id="tab-customers" class="panel">
+    <p class="section-title">All customers</p>
+    <div id="customers-list">
+      <div class="empty-state">
+        <div class="empty-icon">&#128101;</div>
+        <p>No customers yet. Sign ups will appear here.</p>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Success Modal -->
-  <div class="success-overlay" id="success-overlay" onclick="closeModal()">
-    <div class="success-modal" onclick="event.stopPropagation()">
-      <div class="success-icon">&#127881;</div>
-      <div class="success-cust" id="modal-name"></div>
-      <div class="success-visits" id="modal-visits"></div>
-      <div class="success-sub" id="modal-sub"></div>
-      <div id="modal-reward" style="margin-bottom:12px;"></div>
-      <button class="btn-close" onclick="closeModal()">Done</button>
-    </div>
+<!-- Success Modal -->
+<div class="success-overlay" id="success-overlay" onclick="closeModal()">
+  <div class="success-modal" onclick="event.stopPropagation()">
+    <div class="success-icon">&#127881;</div>
+    <div class="success-cust" id="modal-name"></div>
+    <div class="success-visits" id="modal-visits"></div>
+    <div class="success-sub" id="modal-sub"></div>
+    <div id="modal-reward" style="margin-bottom:12px;"></div>
+    <button class="btn-close" onclick="closeModal()">Done</button>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
-    import QRCode from "https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const DB_KEY = 'loyalbite_customers';
+  const VISITS_FOR_REWARD = 5;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCr8aln31FTNVaPGZ36veXZs7YbA6uy01A",
-      authDomain: "loyalbite-5885c.firebaseapp.com",
-      projectId: "loyalbite-5885c",
-      storageBucket: "loyalbite-5885c.appspot.com",
-      messagingSenderId: "224714963584",
-      appId: "1:224714963584:web:9a3f1cdfbdbb2e204d0465"
+  function getDB() {
+    try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch { return {}; }
+  }
+  function saveDB(db) {
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+  }
+
+  function genUID() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = 'LB-';
+    for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', ['signup', 'card', 'scanner', 'customers'][i] === name);
+    });
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'card') renderMyCard();
+    if (name === 'customers') renderCustomers();
+  }
+
+  let currentUserUID = null;
+
+  function registerCustomer() {
+    const name = document.getElementById('reg-name').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    if (!name || !phone) { alert('Please enter your name and phone number.'); return; }
+
+    const db = getDB();
+    const existing = Object.values(db).find(c => c.phone === phone);
+    if (existing) {
+      currentUserUID = existing.uid;
+      switchTab('card');
+      return;
+    }
+
+    const uid = genUID();
+    const customer = {
+      uid, name, phone,
+      email: document.getElementById('reg-email').value.trim(),
+      visits: 0,
+      visitLog: [],
+      joined: new Date().toISOString()
     };
+    db[uid] = customer;
+    saveDB(db);
+    currentUserUID = uid;
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    document.getElementById('reg-name').value = '';
+    document.getElementById('reg-phone').value = '';
+    document.getElementById('reg-email').value = '';
 
-    const VISITS_FOR_REWARD = 5;
-    let currentUserUID = null;
+    switchTab('card');
+  }
 
-    function switchTab(name) {
-      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['signup', 'card', 'scanner', 'customers'][i] === name));
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('tab-' + name).classList.add('active');
-      if (name === 'card') renderMyCard();
-      if (name === 'customers') renderCustomers();
+  function renderMyCard() {
+    if (!currentUserUID) { return; }
+    const db = getDB();
+    const c = db[currentUserUID];
+    if (!c) return;
+
+    document.getElementById('card-empty').style.display = 'none';
+    document.getElementById('card-display').style.display = 'block';
+    document.getElementById('card-name').textContent = c.name;
+    document.getElementById('card-uid').textContent = c.uid;
+
+    const canvas = document.getElementById('qr-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 160, 160);
+    drawQR(canvas, c.uid);
+
+    const starsRow = document.getElementById('stars-row');
+    const progress = c.visits % VISITS_FOR_REWARD;
+    starsRow.innerHTML = '';
+    for (let i = 0; i < VISITS_FOR_REWARD; i++) {
+      const s = document.createElement('span');
+      s.className = 'star ' + (i < progress ? 'filled' : 'empty');
+      s.textContent = '★';
+      starsRow.appendChild(s);
     }
 
-    function genUID() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let id = 'LB-'; for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)]; return id;
+    const totalRewards = Math.floor(c.visits / VISITS_FOR_REWARD);
+    document.getElementById('visits-label').textContent = c.visits + ' total visit' + (c.visits !== 1 ? 's' : '') + ' · ' + progress + '/' + VISITS_FOR_REWARD + ' to next reward';
+
+    const rz = document.getElementById('reward-zone');
+    rz.innerHTML = totalRewards > 0
+      ? '<span class="reward-badge">&#127881; ' + totalRewards + ' reward' + (totalRewards > 1 ? 's' : '') + ' earned!</span>'
+      : '';
+
+    const log = document.getElementById('visit-log-me');
+    if (!c.visitLog || c.visitLog.length === 0) {
+      log.innerHTML = '<div class="empty-state" style="padding:1rem;"><p>No visits yet.</p></div>';
+    } else {
+      log.innerHTML = [...c.visitLog].reverse().map(v =>
+        `<div class="log-item"><span>Visit #${v.num}</span><span>${new Date(v.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></div>`
+      ).join('');
+    }
+  }
+
+  function drawQR(canvas, text) {
+    const size = 160;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+
+    const seed = hashCode(text);
+    const rng = seededRandom(seed);
+    const modules = 21;
+    const cellSize = size / (modules + 4);
+    const offset = 2 * cellSize;
+
+    ctx.fillStyle = '#1A1208';
+
+    const grid = [];
+    for (let r = 0; r < modules; r++) {
+      grid[r] = [];
+      for (let c2 = 0; c2 < modules; c2++) {
+        grid[r][c2] = rng() > 0.5 ? 1 : 0;
+      }
     }
 
-    function registerCustomer() {
-      const name = document.getElementById('reg-name').value.trim();
-      const phone = document.getElementById('reg-phone').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      if (!name || !phone) { alert('Enter name & phone'); return; }
+    function addFinder(row, col) {
+      for (let i = 0; i < 7; i++) for (let j = 0; j < 7; j++) {
+        if (row + i < modules && col + j < modules) {
+          grid[row + i][col + j] = (i === 0 || i === 6 || j === 0 || j === 6 || (i >= 2 && i <= 4 && j >= 2 && j <= 4)) ? 1 : 0;
+        }
+      }
+    }
+    addFinder(0, 0);
+    addFinder(0, modules - 7);
+    addFinder(modules - 7, 0);
 
-      const uid = genUID();
-      const customer = { uid, name, phone, email, visits: 0, visitLog: [], joined: new Date().toISOString() };
-
-      set(ref(db, 'customers/' + uid), customer)
-        .then(() => { currentUserUID = uid; document.getElementById('reg-name').value = ''; document.getElementById('reg-phone').value = ''; document.getElementById('reg-email').value = ''; switchTab('card'); })
-        .catch(err => console.error(err));
+    const textBytes = [];
+    for (let i = 0; i < text.length; i++) textBytes.push(text.charCodeAt(i));
+    let bi = 0;
+    for (let r = 8; r < modules; r++) {
+      for (let c2 = 8; c2 < modules - 7; c2++) {
+        if (bi < textBytes.length * 8) {
+          grid[r][c2] = (textBytes[Math.floor(bi / 8)] >> (7 - bi % 8)) & 1;
+          bi++;
+        }
+      }
     }
 
-    function renderMyCard() {
-      if (!currentUserUID) { document.getElementById('card-empty').style.display = 'block'; document.getElementById('card-display').style.display = 'none'; return; }
-      get(child(ref(db), 'customers/' + currentUserUID))
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            const c = snapshot.val();
-            document.getElementById('card-empty').style.display = 'none';
-            document.getElementById('card-display').style.display = 'block';
-            document.getElementById('card-name').textContent = c.name;
-            document.getElementById('card-uid').textContent = c.uid;
-
-            QRCode.toCanvas(document.getElementById('qr-canvas'), c.uid, { width: 160 }, function (err) { if (err) console.error(err); });
-
-            const stars = Array.from({ length: VISITS_FOR_REWARD }, (_, i) =>
-              `<span class="star ${i < c.visits ? 'filled' : 'empty'}">&#9733;</span>`).join('');
-            document.getElementById('stars-row').innerHTML = stars;
-            document.getElementById('visits-label').textContent = `Visits: ${c.visits}`;
-
-            document.getElementById('reward-zone').innerHTML = c.visits >= VISITS_FOR_REWARD ? `<div class="reward-badge">Reward Unlocked!</div>` : '';
-
-            const logDiv = document.getElementById('visit-log-me');
-            logDiv.innerHTML = c.visitLog.length > 0 ? c.visitLog.map(v => `<div class="log-item"><span>Visit #${v.num}</span><span>${new Date(v.date).toLocaleDateString()}</span></div>`).join('') : `<div class="empty-state"><p>No visits yet.</p></div>`;
-          }
-        }).catch(err => console.error(err));
+    for (let r = 0; r < modules; r++) {
+      for (let c2 = 0; c2 < modules; c2++) {
+        if (grid[r][c2]) {
+          ctx.fillRect(offset + c2 * cellSize, offset + r * cellSize, cellSize - 0.5, cellSize - 0.5);
+        }
+      }
     }
 
-    function processScan() {
-      const input = document.getElementById('scan-input').value.trim().toUpperCase();
-      const alertEl = document.getElementById('scan-alert');
-      if (!input) { alertEl.textContent = 'Enter customer ID'; alertEl.className = 'alert error'; return; }
+    ctx.fillStyle = '#C9A84C';
+    const dotSize = cellSize * 1.2;
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, dotSize, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(cellSize * 0.9)}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('★', size / 2, size / 2);
+  }
 
-      get(child(ref(db), 'customers/' + input))
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            const c = snapshot.val();
-            c.visits++;
-            c.visitLog.push({ num: c.visits, date: new Date().toISOString() });
-            const updates = {};
-            updates['customers/' + input + '/visits'] = c.visits;
-            updates['customers/' + input + '/visitLog'] = c.visitLog;
-            update(ref(db), updates).then(() => showModal(c));
-          } else { alertEl.textContent = 'Customer not found'; alertEl.className = 'alert error'; }
-        }).catch(err => console.error(err));
+  function hashCode(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function seededRandom(seed) {
+    let s = seed;
+    return function () {
+      s = (s * 1664525 + 1013904223) & 0xFFFFFFFF;
+      return (s >>> 0) / 0xFFFFFFFF;
+    };
+  }
+
+  function processScan() {
+    const input = document.getElementById('scan-input').value.trim().toUpperCase();
+    const alertEl = document.getElementById('scan-alert');
+    alertEl.className = 'alert';
+    alertEl.style.display = 'none';
+
+    if (!input) {
+      alertEl.textContent = 'Please enter a customer ID.';
+      alertEl.className = 'alert error';
+      return;
     }
 
-    function showModal(c) {
-      document.getElementById('modal-name').textContent = c.name;
-      document.getElementById('modal-visits').textContent = `Visits: ${c.visits}`;
-      document.getElementById('modal-sub').textContent = c.visits >= VISITS_FOR_REWARD ? 'Reward unlocked!' : '';
-      document.getElementById('modal-reward').innerHTML = c.visits >= VISITS_FOR_REWARD ? '<div class="reward-badge">🎁 Reward</div>' : '';
-      document.getElementById('success-overlay').classList.add('show');
+    const db = getDB();
+    const customer = db[input];
+    if (!customer) {
+      alertEl.textContent = 'Customer ID "' + input + '" not found. Please check and try again.';
+      alertEl.className = 'alert error';
+      return;
     }
 
-    function closeModal() { document.getElementById('success-overlay').classList.remove('show'); }
+    customer.visits = (customer.visits || 0) + 1;
+    if (!customer.visitLog) customer.visitLog = [];
+    customer.visitLog.push({ num: customer.visits, date: new Date().toISOString() });
+    db[input] = customer;
+    saveDB(db);
 
-    function renderCustomers() {
-      get(child(ref(db), 'customers')).then(snapshot => {
-        const listDiv = document.getElementById('customers-list'); listDiv.innerHTML = '';
-        if (snapshot.exists()) {
-          const val = snapshot.val();
-          Object.values(val).forEach(c => {
-            const div = document.createElement('div'); div.className = 'customer-item';
-            div.innerHTML = `<div class="avatar">${c.name[0].toUpperCase()}</div><div class="cust-info"><div class="cust-name">${c.name}</div><div class="cust-meta">Visits: ${c.visits}</div></div>`;
-            listDiv.appendChild(div);
-          });
-        } else { listDiv.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128101;</div><p>No customers yet.</p></div>`; }
+    document.getElementById('scan-input').value = '';
+
+    document.getElementById('modal-name').textContent = customer.name;
+    document.getElementById('modal-visits').textContent = customer.visits + ' visit' + (customer.visits !== 1 ? 's' : '');
+
+    const progress = customer.visits % VISITS_FOR_REWARD;
+    const left = VISITS_FOR_REWARD - progress;
+    const isReward = progress === 0;
+
+    if (isReward) {
+      document.getElementById('modal-sub').textContent = 'Reward unlocked! Free item on this visit!';
+      document.getElementById('modal-reward').innerHTML = '<span class="reward-badge" style="font-size:14px;padding:6px 16px;">&#127881; Free reward earned!</span>';
+    } else {
+      document.getElementById('modal-sub').textContent = left + ' more visit' + (left !== 1 ? 's' : '') + ' until next reward';
+      document.getElementById('modal-reward').innerHTML = '';
+    }
+
+    document.getElementById('success-overlay').classList.add('show');
+    alertEl.textContent = 'Visit added for ' + customer.name + '!';
+    alertEl.className = 'alert success';
+  }
+
+  function closeModal() {
+    document.getElementById('success-overlay').classList.remove('show');
+  }
+
+  function renderCustomers() {
+    const db = getDB();
+    const list = document.getElementById('customers-list');
+    const customers = Object.values(db).sort((a, b) => b.visits - a.visits);
+
+    if (customers.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128101;</div><p>No customers yet.</p></div>';
+      return;
+    }
+
+    list.innerHTML = '<ul class="customer-list">' + customers.map(c => {
+      const initials = c.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const progress = c.visits % VISITS_FOR_REWARD;
+      return `<li class="customer-item" onclick="viewCustomer('${c.uid}')">
+      <div class="avatar">${initials}</div>
+      <div class="cust-info">
+        <div class="cust-name">${c.name}</div>
+        <div class="cust-meta">${c.uid} · ★ ${progress}/${VISITS_FOR_REWARD}</div>
+      </div>
+      <div class="cust-visits">${c.visits}</div>
+    </li>`;
+    }).join('') + '</ul>';
+  }
+
+  function viewCustomer(uid) {
+    currentUserUID = uid;
+    switchTab('card');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const db = getDB();
+    if (Object.keys(db).length === 0) {
+      const demo = [{ name: 'Sara Mohamed', phone: '01011111111', visits: 3 }, { name: 'Omar Khalid', phone: '01022222222', visits: 7 }];
+      demo.forEach(d => {
+        const uid = genUID();
+        const log = [];
+        for (let i = 1; i <= d.visits; i++) {
+          const date = new Date(); date.setDate(date.getDate() - (d.visits - i) * 3);
+          log.push({ num: i, date: date.toISOString() });
+        }
+        db[uid] = { uid, name: d.name, phone: d.phone, email: '', visits: d.visits, visitLog: log, joined: new Date().toISOString() };
       });
+      saveDB(db);
     }
-  </script>
-</body>
+  });
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+  import QRCode from "https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js";
 
-</html>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCr8aln31FTNVaPGZ36veXZs7YbA6uy01A",
+    authDomain: "loyalbite-5885c.firebaseapp.com",
+    projectId: "loyalbite-5885c",
+    storageBucket: "loyalbite-5885c.appspot.com",
+    messagingSenderId: "224714963584",
+    appId: "1:224714963584:web:9a3f1cdfbdbb2e204d0465"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const VISITS_FOR_REWARD = 5;
+  let currentUserUID = null;
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['signup', 'card', 'scanner', 'customers'][i] === name));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'card') renderMyCard();
+    if (name === 'customers') renderCustomers();
+  }
+
+  function genUID() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = 'LB-'; for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)]; return id;
+  }
+
+  function registerCustomer() {
+    const name = document.getElementById('reg-name').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    if (!name || !phone) { alert('Enter name & phone'); return; }
+
+    const uid = genUID();
+    const customer = { uid, name, phone, email, visits: 0, visitLog: [], joined: new Date().toISOString() };
+
+    set(ref(db, 'customers/' + uid), customer)
+      .then(() => { currentUserUID = uid; document.getElementById('reg-name').value = ''; document.getElementById('reg-phone').value = ''; document.getElementById('reg-email').value = ''; switchTab('card'); })
+      .catch(err => console.error(err));
+  }
+
+  function renderMyCard() {
+    if (!currentUserUID) { document.getElementById('card-empty').style.display = 'block'; document.getElementById('card-display').style.display = 'none'; return; }
+    get(child(ref(db), 'customers/' + currentUserUID))
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const c = snapshot.val();
+          document.getElementById('card-empty').style.display = 'none';
+          document.getElementById('card-display').style.display = 'block';
+          document.getElementById('card-name').textContent = c.name;
+          document.getElementById('card-uid').textContent = c.uid;
+
+          QRCode.toCanvas(document.getElementById('qr-canvas'), c.uid, { width: 160 }, function (err) { if (err) console.error(err); });
+
+          const stars = Array.from({ length: VISITS_FOR_REWARD }, (_, i) =>
+            `<span class="star ${i < c.visits ? 'filled' : 'empty'}">&#9733;</span>`).join('');
+          document.getElementById('stars-row').innerHTML = stars;
+          document.getElementById('visits-label').textContent = `Visits: ${c.visits}`;
+
+          document.getElementById('reward-zone').innerHTML = c.visits >= VISITS_FOR_REWARD ? `<div class="reward-badge">Reward Unlocked!</div>` : '';
+
+          const logDiv = document.getElementById('visit-log-me');
+          logDiv.innerHTML = c.visitLog.length > 0 ? c.visitLog.map(v => `<div class="log-item"><span>Visit #${v.num}</span><span>${new Date(v.date).toLocaleDateString()}</span></div>`).join('') : `<div class="empty-state"><p>No visits yet.</p></div>`;
+        }
+      }).catch(err => console.error(err));
+  }
+
+  function processScan() {
+    const input = document.getElementById('scan-input').value.trim().toUpperCase();
+    const alertEl = document.getElementById('scan-alert');
+    if (!input) { alertEl.textContent = 'Enter customer ID'; alertEl.className = 'alert error'; return; }
+
+    get(child(ref(db), 'customers/' + input))
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const c = snapshot.val();
+          c.visits++;
+          c.visitLog.push({ num: c.visits, date: new Date().toISOString() });
+          const updates = {};
+          updates['customers/' + input + '/visits'] = c.visits;
+          updates['customers/' + input + '/visitLog'] = c.visitLog;
+          update(ref(db), updates).then(() => showModal(c));
+        } else { alertEl.textContent = 'Customer not found'; alertEl.className = 'alert error'; }
+      }).catch(err => console.error(err));
+  }
+
+  function showModal(c) {
+    document.getElementById('modal-name').textContent = c.name;
+    document.getElementById('modal-visits').textContent = `Visits: ${c.visits}`;
+    document.getElementById('modal-sub').textContent = c.visits >= VISITS_FOR_REWARD ? 'Reward unlocked!' : '';
+    document.getElementById('modal-reward').innerHTML = c.visits >= VISITS_FOR_REWARD ? '<div class="reward-badge">🎁 Reward</div>' : '';
+    document.getElementById('success-overlay').classList.add('show');
+  }
+
+  function closeModal() { document.getElementById('success-overlay').classList.remove('show'); }
+
+  function renderCustomers() {
+    get(child(ref(db), 'customers')).then(snapshot => {
+      const listDiv = document.getElementById('customers-list'); listDiv.innerHTML = '';
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+        Object.values(val).forEach(c => {
+          const div = document.createElement('div'); div.className = 'customer-item';
+          div.innerHTML = `<div class="avatar">${c.name[0].toUpperCase()}</div><div class="cust-info"><div class="cust-name">${c.name}</div><div class="cust-meta">Visits: ${c.visits}</div></div>`;
+          listDiv.appendChild(div);
+        });
+      } else { listDiv.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128101;</div><p>No customers yet.</p></div>`; }
+    });
+  }
+</script>
